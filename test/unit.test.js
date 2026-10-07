@@ -117,3 +117,19 @@ test('las citas 【n】 de gpt-oss se normalizan a [n]', () => {
   const { answer } = splitQuotes(`Es el jueves【1】 y repasa Ohm【2†L4-L6】.\n${QUOTES_DELIM}\n【1】 jueves`);
   assert.equal(answer, 'Es el jueves[1] y repasa Ohm[2].');
 });
+
+test('cuota: duraciones de Groq y medidores', async () => {
+  const { parseDuration, trackGroq, trackGemini, aiQuota } = await import('../lib/quota.js');
+  assert.equal(parseDuration('1m26.4s'), 86_400);
+  assert.equal(parseDuration('350ms'), 350);
+  assert.equal(parseDuration('2h3m'), 7_380_000);
+  const headers = new Headers({ 'x-ratelimit-limit-requests': '1000', 'x-ratelimit-remaining-requests': '900', 'x-ratelimit-reset-requests': '2h' });
+  trackGroq('chat', headers);
+  trackGemini('embed', 40);
+  const q = Object.fromEntries(aiQuota().map((m) => [m.id, m]));
+  assert.equal(q.groq_chat.used, 100);
+  assert.equal(q.groq_chat.limit, 1000);
+  assert.equal(q.groq_chat.real, true);
+  assert.equal(q.gemini_embed.used, 40);
+  assert.equal(q.gemini_embed.real, false);
+});

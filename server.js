@@ -4,6 +4,7 @@ import { createApp } from './app.js';
 import { resumeJobs } from './lib/jobs.js';
 import { cleanupExpiredSessions } from './lib/auth.js';
 import { db } from './lib/db.js';
+import { cleanupDemos } from './lib/demo.js';
 
 const app = createApp();
 
@@ -12,6 +13,8 @@ const server = app.listen(config.port, config.host, () => {
   resumeJobs();
   cleanupExpiredSessions();
   setInterval(cleanupExpiredSessions, 24 * 3600 * 1000).unref();
+  cleanupDemos();
+  setInterval(cleanupDemos, 30 * 60_000).unref();
 });
 
 // Apagado limpio (systemd manda SIGTERM): cerrar conexiones y la base

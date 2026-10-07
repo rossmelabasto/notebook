@@ -6,6 +6,7 @@ import { fail, intParam, limiter, requireAuth } from '../lib/http.js';
 import { storeImage, storeAudio, unlinkQuiet, sendStoredFile } from '../lib/media.js';
 import { queueImage, queueAudio, scheduleIndex } from '../lib/jobs.js';
 import { ownNote, MESSAGE_SELECT } from './notes.js';
+import { checkDemo, spendDemo } from '../lib/demo.js';
 
 export const router = Router();
 router.use(requireAuth);
@@ -38,6 +39,8 @@ router.get('/images/:id/file', (req, res) => {
 router.post('/notes/:id/images', limiter('imgs', 40, 60_000), imageUpload.array('images', 10), (req, res) => {
   const note = ownNote(req.user.id, req.params.id);
   if (!req.files?.length) fail(400, 'no_files', 'No images received');
+  for (const f of req.files) checkDemo(req.user, 'imageBytes', f.size);
+  spendDemo(req.user, 'images', req.files.length);
   const stored = [];
   let rejected = 0;
   for (const f of req.files) {
@@ -83,6 +86,7 @@ router.put('/images/:id', (req, res) => {
 
 router.post('/images/:id/process', limiter('reprocess', 30, 60_000), (req, res) => {
   const img = ownImage(req.user.id, req.params.id);
+  spendDemo(req.user, 'images');
   queueImage(img.id);
   res.json({ ok: true });
 });
@@ -103,6 +107,8 @@ router.get('/audios/:id/file', (req, res) => {
 router.post('/notes/:id/audio', limiter('audio', 20, 60_000), audioUpload.single('audio'), (req, res) => {
   const note = ownNote(req.user.id, req.params.id);
   if (!req.file) fail(400, 'no_files', 'No audio received');
+  checkDemo(req.user, 'audioBytes', req.file.size);
+  spendDemo(req.user, 'audio');
   const s = storeAudio(req.file.buffer);
   if (!s) fail(400, 'bad_audio', 'Unsupported audio format');
   let msgId;
@@ -137,6 +143,7 @@ router.put('/audios/:id', (req, res) => {
 
 router.post('/audios/:id/process', limiter('reprocess', 30, 60_000), (req, res) => {
   const a = ownAudio(req.user.id, req.params.id);
+  spendDemo(req.user, 'audio');
   queueAudio(a.id);
   res.json({ ok: true });
 });

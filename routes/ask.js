@@ -4,6 +4,7 @@ import { db } from '../lib/db.js';
 import { fail, intParam, limiter, requireAuth, HttpError } from '../lib/http.js';
 import { answerQuestion } from '../lib/rag/answer.js';
 import { searchMessages } from '../lib/rag/search.js';
+import { spendDemo } from '../lib/demo.js';
 
 export const router = Router();
 router.use(requireAuth);
@@ -75,6 +76,7 @@ router.post('/ask', limiter('ask', 15, 60_000), async (req, res) => {
   if (!question || question.length > 2000) fail(400, 'bad_question', 'Invalid question');
   const scope = parseScope(req.user.id, req.body?.subject_id);
   const convo = req.body?.convo_id ? ownConvo(req.user.id, req.body.convo_id) : null;
+  spendDemo(req.user, 'ask');
   const history = convo
     ? db.prepare('SELECT role, content FROM convo_messages WHERE convo_id = ? ORDER BY id DESC LIMIT 6').all(convo.id).reverse()
     : [];

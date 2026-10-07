@@ -826,6 +826,7 @@ async function uploadImages(files, attachBtn) {
     const r = await api(`/api/notes/${state.current.id}/images`, { method: 'POST', body: fd });
     pushMessages(r.messages);
     toast(t('compose.imagesUploaded', { n: r.messages.length }), 'ok', 'image');
+    import('./demo.js').then((m) => m.refreshDemoBar());
   } catch (e) { toastError(e); }
   attachBtn?.classList.remove('busy');
 }
@@ -879,6 +880,7 @@ async function startRecording(row) {
       try {
         const r = await api(`/api/notes/${state.current.id}/audio`, { method: 'POST', body: fd });
         pushMessages(r.messages);
+        import('./demo.js').then((m) => m.refreshDemoBar());
       } catch (e) { toastError(e); }
     };
     rec.stop();

@@ -3,6 +3,8 @@ import { el, icon, btn } from './core.js';
 import { t, getLang, setLang } from './i18n.js';
 import { isDark, toggleTheme } from './theme.js';
 import { renderAuth } from './auth.js';
+import { api } from './core.js';
+import { startDemo } from './demo.js';
 
 export const REPO_URL = 'https://github.com/rossmelabasto/notebook';
 export const PORTFOLIO_URL = 'https://portfolio.rossmel.top';
@@ -17,7 +19,9 @@ const link = (cls, href, children, external = true) => {
 
 const shot = (name) => `/landing/${name}-${isDark() ? 'dark' : 'light'}.webp`;
 
-export function renderLanding() {
+export async function renderLanding() {
+  let demo = false;
+  try { demo = (await api('/api/bootstrap', { noAuthRedirect: true })).demo; } catch { /* sin demo */ }
   const page = el('div', 'landing');
   document.title = 'Notebook — ' + t('land.titleTag');
 
@@ -47,11 +51,16 @@ export function renderLanding() {
   const h1 = el('h1');
   h1.append(document.createTextNode(t('land.h1a') + ' '), el('span', 'l-grad', t('land.h1b')));
   const ctas = el('div', 'l-ctas');
-  ctas.append(
-    btn('btn btn-primary l-cta', { label: t('land.ctaEnter'), onClick: () => renderAuth({ fromLanding: true }) }),
-    link('btn l-cta', REPO_URL, [icon('github'), el('span', null, t('land.ctaRepo'))])
-  );
+  if (demo) {
+    const tryBtn = btn('btn btn-primary l-cta', { icon: 'sparkle', label: t('demo.try') });
+    tryBtn.onclick = () => startDemo(tryBtn);
+    ctas.append(tryBtn);
+  } else {
+    ctas.append(btn('btn btn-primary l-cta', { label: t('land.ctaEnter'), onClick: () => renderAuth({ fromLanding: true }) }));
+  }
+  ctas.append(link('btn l-cta', REPO_URL, [icon('github'), el('span', null, t('land.ctaRepo'))]));
   hero.append(badge, h1, el('p', 'l-lead', t('land.lead')), ctas);
+  if (demo) hero.appendChild(el('p', 'l-demo-note', t('demo.note')));
 
   /* capturas */
   const showcase = el('div', 'l-showcase reveal');

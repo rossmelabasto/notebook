@@ -9,6 +9,9 @@ import {
 import {
   COOKIE, fail, limiter, parseCookies, requireAuth, setSessionCookie, clientIp, wrap,
 } from '../lib/http.js';
+import { createDemoUser, deleteUserWithFiles, demoInfo, checkDemo } from '../lib/demo.js';
+import { getUserBySession } from '../lib/auth.js';
+import { scheduleIndex } from '../lib/jobs.js';
 
 export const router = Router();
 
@@ -16,10 +19,10 @@ const newSession = (req, res, userId) => {
   const token = createSession(userId, { userAgent: req.headers['user-agent'], ip: clientIp(req) });
   setSessionCookie(req, res, token, config.sessionDays);
 };
-const publicUser = (u) => ({ id: u.id, username: u.username, isAdmin: !!u.is_admin });
+const publicUser = (u) => ({ id: u.id, username: u.username, isAdmin: !!u.is_admin, isDemo: !!u.isDemo, demo: demoInfo(u) });
 
 router.get('/bootstrap', (req, res) => {
-  res.json({ needsSetup: userCount() === 0 });
+  res.json({ needsSetup: userCount() === 0, demo: config.demoEnabled });
 });
 
 router.post('/setup', limiter('setup', 5, 60_000, clientIp), (req, res) => {
@@ -52,7 +55,19 @@ router.post(
   }
 );
 
+// Demo pública: cuenta temporal con apuntes de ejemplo (máx. 3 por IP y hora)
+router.post('/demo', limiter('demo', 3, 60 * 60_000, clientIp), (req, res) => {
+  const { id, username, noteIds } = createDemoUser(req.body?.lang === 'en' ? 'en' : 'es');
+  const token = createSession(id, { userAgent: req.headers['user-agent'], ip: clientIp(req), hours: config.demoHours });
+  setSessionCookie(req, res, token, config.demoHours / 24);
+  noteIds.forEach((n, i) => scheduleIndex(n, 500 + i * 300));
+  res.json({ ok: true, user: { id, username, isAdmin: false, isDemo: true }, openNote: noteIds.at(-1) });
+});
+
 router.post('/logout', (req, res) => {
+  // salir de la demo = borrar la cuenta temporal con todo lo suyo
+  const u = getUserBySession(parseCookies(req)[COOKIE]);
+  if (u?.isDemo) deleteUserWithFiles(u.id);
   destroySession(parseCookies(req)[COOKIE]);
   res.clearCookie(COOKIE, { path: '/' });
   res.json({ ok: true });
@@ -67,6 +82,7 @@ router.put(
   requireAuth,
   limiter('pw', 5, 15 * 60_000),
   (req, res) => {
+    checkDemo(req.user, 'blocked');
     const { current, password } = req.body || {};
     const row = db.prepare('SELECT password_hash FROM users WHERE id = ?').get(req.user.id);
     if (!verifyPassword(String(current || ''), row.password_hash)) fail(403, 'bad_current_password', 'Current password is wrong');

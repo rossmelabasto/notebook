@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-07 — Public demo and quota meters
+
+- *Try the demo* (`DEMO_ENABLED=1`): a temporary 24-hour account with sample notes in Spanish or English, a pre-read whiteboard photo, and ready-made flashcards and quiz. Limits per account (8 AI questions, 2 study sets, 2 small photos, 2 short voice notes, no imports, no password changes), at most 3 demos per IP per hour, 25 active at once, and global daily caps. Leaving the demo deletes it; expired demos are cleaned up every 30 minutes. Demo accounts are hidden from the admin user list.
+- Identical chunks reuse an existing embedding instead of calling the API again (sample notes cost no quota).
+- Admin panel: today's free AI quota — exact for Groq (from its rate-limit headers), estimated for Gemini (counted locally against the free daily limits).
+
 ## 2026-10-07 — Open source
 
 - Public release under the MIT license, with a clean history.

@@ -10,9 +10,12 @@ import { fail, limiter, requireAuth } from '../lib/http.js';
 import { parseWhatsApp } from '../lib/whatsapp.js';
 import { importWhatsAppZip } from '../lib/importer.js';
 import { scheduleIndex } from '../lib/jobs.js';
+import { checkDemo } from '../lib/demo.js';
 
 export const router = Router();
 router.use(requireAuth);
+// la demo no importa chats (los .zip traen muchas fotos y audios que gastarían cuota de IA)
+router.use('/import', (req, res, next) => { if (req.user.isDemo) checkDemo(req.user, 'blocked'); next(); });
 
 const IMPORT_DIR = path.join(os.tmpdir(), 'notebook-imports');
 mkdirSync(IMPORT_DIR, { recursive: true });

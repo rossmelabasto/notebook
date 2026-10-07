@@ -7,7 +7,7 @@
 **Tus apuntes como un chat contigo mismo, con memoria.**<br/>
 Escribe, pega, sácale foto a la pizarra o graba una nota de voz. Después pregúntale a tus apuntes, búscalos al instante y estudia con flashcards hechas con lo que *tú* escribiste.
 
-[Instancia en vivo](https://notebook.rossmel.top) · [Instalarlo](#instalarlo-en-tu-servidor) · [Cómo funciona](docs/ARCHITECTURE.md) · [English](README.md)
+[Demo en vivo](https://notebook.rossmel.top) · [Instalarlo](#instalarlo-en-tu-servidor) · [Cómo funciona](docs/ARCHITECTURE.md) · [English](README.md)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/desktop-dark.webp" />
@@ -25,7 +25,8 @@ Escribe, pega, sácale foto a la pizarra o graba una nota de voz. Después preg�
 - **Búsqueda al instante:** `Ctrl+K` busca palabras en todos los apuntes (sin importar tildes), también dentro de fotos y audios.
 - **Importar WhatsApp:** trae el chat del grupo del curso (`.zip` con fotos y audios, o el `.txt` pegado).
 - **Tuyo:** corre en tu servidor con un solo archivo SQLite, varios usuarios aislados entre sí, exportación a Markdown/zip, se instala como app, tema claro/oscuro y en español/inglés.
-- **Gratis:** pensado para los planes gratuitos de Groq (chat y voz) y Gemini (búsqueda por significado y lectura de imágenes).
+- **Gratis:** pensado para los planes gratuitos de Groq (chat y voz) y Gemini (búsqueda por significado y lectura de imágenes). El panel de admin muestra la cuota gratis del día (exacta para Groq, estimada para Gemini).
+- **Demo pública (opcional):** con `DEMO_ENABLED=1` aparece *Probar la demo*: una cuenta temporal de 24 h con apuntes de ejemplo, flashcards y un quiz, con límites estrictos (pocas preguntas a la IA, archivos chicos, sin importar) y un tope diario global para no gastar la cuota de los usuarios reales.
 
 ## Instalarlo en tu servidor
 

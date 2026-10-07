@@ -12,13 +12,13 @@ export function openAccountMenu(anchor) {
   const menu = popMenu(anchor, [
     { icon: 'globe', label: getLang() === 'es' ? 'English' : 'Español', onClick: () => { setLang(getLang() === 'es' ? 'en' : 'es'); renderApp(); } },
     { icon: 'droplet', label: t('appearance.title'), onClick: openAppearance },
-    { icon: 'monitor', label: t('account.sessions'), onClick: openSessions },
-    { icon: 'key', label: t('account.password'), onClick: openPassword },
+    state.user.isDemo ? null : { icon: 'monitor', label: t('account.sessions'), onClick: openSessions },
+    state.user.isDemo ? null : { icon: 'key', label: t('account.password'), onClick: openPassword },
     { icon: 'download', label: t('account.export'), onClick: () => { location.href = '/api/export'; toast(t('account.exporting'), 'ok', 'download'); } },
     state.user.isAdmin ? { icon: 'users', label: t('account.users'), onClick: openUsers } : null,
     canInstall() ? { icon: 'download', label: t('account.install'), onClick: doInstall } : null,
     '-',
-    { icon: 'logout', label: t('account.logout'), danger: true, onClick: logout },
+    { icon: 'logout', label: state.user.isDemo ? t('demo.leave') : t('account.logout'), danger: true, onClick: logout },
   ]);
   const head = el('div', 'pop-head');
   head.append(el('span', 'avatar sm', (state.user.username[0] || '?').toUpperCase()), el('div', null, state.user.username));
@@ -157,8 +157,10 @@ async function openUsers() {
       pill(t('account.stNotes'), st.counts.notes),
       pill(t('account.stMessages'), st.counts.messages),
       pill(t('account.stChunks'), st.counts.chunks),
-      pill(t('account.stPending'), st.counts.notIndexed + st.counts.imagesPending + st.counts.audiosPending)
+      pill(t('account.stPending'), st.counts.notIndexed + st.counts.imagesPending + st.counts.audiosPending),
+      pill(t('account.stDemos'), st.counts.demoAccounts ?? 0)
     );
+    status.appendChild(quotaMeters(st.quota || []));
     status.appendChild(el('div', 'models', `${t('account.models')}: ${[st.models.chat, st.models.fallback].filter(Boolean).join(' → ')} · ${st.models.embeddings} · ${st.models.transcription}`));
     list.replaceChildren();
     for (const u of users) {
@@ -184,6 +186,34 @@ async function openUsers() {
     }
   }
   load().catch(toastError);
+}
+
+/** Barras de la cuota gratuita de IA del día (Groq: dato real; Gemini: estimado) */
+function quotaMeters(meters) {
+  const box = el('div', 'quota');
+  box.appendChild(el('div', 'mini-label', t('quota.title')));
+  for (const m of meters) {
+    const row = el('div', 'quota-row');
+    const head = el('div', 'quota-head');
+    head.append(el('span', 'quota-name', t(`quota.${m.id}`)));
+    const val = m.limit ? `${m.used} / ${m.limit}` : t('quota.noData');
+    head.append(el('span', 'quota-val', val + (m.real ? '' : ` · ${t('quota.estimate')}`)));
+    const bar = el('div', 'quota-bar');
+    const fill = el('div', 'quota-fill');
+    const pct = m.limit ? Math.min(100, Math.round((m.used / m.limit) * 100)) : 0;
+    fill.style.width = pct + '%';
+    fill.classList.toggle('warn', pct >= 70);
+    fill.classList.toggle('bad', pct >= 90);
+    bar.appendChild(fill);
+    row.append(head, bar);
+    if (m.resetAt && m.used > 0) {
+      const mins = Math.max(1, Math.round((new Date(m.resetAt).getTime() - Date.now()) / 60_000));
+      if (mins > 0) row.appendChild(el('div', 'quota-reset', t('quota.resets', { when: mins >= 90 ? `${Math.round(mins / 60)} h` : `${mins} min` })));
+    }
+    box.appendChild(row);
+  }
+  box.appendChild(el('div', 'hint', t('quota.hint')));
+  return box;
 }
 
 function newUser(reload) {

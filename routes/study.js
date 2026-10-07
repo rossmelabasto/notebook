@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { db } from '../lib/db.js';
 import { fail, intParam, limiter, requireAuth } from '../lib/http.js';
 import { createStudySet } from '../lib/study.js';
+import { spendDemo } from '../lib/demo.js';
 
 export const router = Router();
 router.use(requireAuth);
@@ -46,6 +47,7 @@ router.post('/study', limiter('study', 6, 60_000), async (req, res) => {
   const topic = String(req.body?.topic || '').trim().slice(0, 200);
   const lang = req.body?.lang === 'en' ? 'en' : 'es';
   const scope = scopeFromBody(req.user.id, req.body);
+  spendDemo(req.user, 'study');
   const set = await createStudySet({ userId: req.user.id, kind, scope, topic, lang, title: req.body?.title });
   res.json({ set });
 });

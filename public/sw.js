@@ -1,9 +1,9 @@
 // sw.js — Notebook PWA: red primero (siempre la versión nueva) y caché como respaldo sin conexión
-const CACHE = 'notebook-v4';
+const CACHE = 'notebook-v5';
 const CORE = [
   '/', '/index.html', '/style.css', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png',
   '/js/main.js', '/js/core.js', '/js/i18n.js', '/js/shell.js', '/js/editor.js', '/js/ask.js', '/js/study.js',
-  '/js/search.js', '/js/account.js', '/js/importer.js', '/js/auth.js', '/js/markdown.js', '/js/theme.js', '/js/landing.js', '/js/theme-boot.js',
+  '/js/search.js', '/js/account.js', '/js/importer.js', '/js/auth.js', '/js/markdown.js', '/js/theme.js', '/js/landing.js', '/js/demo.js', '/js/theme-boot.js',
   '/vendor/marked.esm.js', '/vendor/purify.es.mjs',
 ];
 

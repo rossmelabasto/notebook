@@ -273,6 +273,7 @@ async function ask(question, thread, ui) {
   bot.streaming = false;
   rerender();
   state.asking = false;
+  import('./demo.js').then((m) => m.refreshDemoBar());
   ui.send.hidden = false;
   ui.stop.hidden = true;
   ui.ta.focus({ preventScroll: true });

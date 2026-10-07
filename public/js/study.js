@@ -165,6 +165,7 @@ async function generate(go) {
     ui.sets.unshift({ ...r.set, created_at: new Date().toISOString() });
     ui.open = r.set;
     toast(t('study.ready'), 'ok', 'sparkle');
+    import('./demo.js').then((m) => m.refreshDemoBar());
   } catch (e) {
     toastError(e);
   }

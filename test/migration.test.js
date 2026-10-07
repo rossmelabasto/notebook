@@ -31,7 +31,7 @@ test('migración v0 → v1', async () => {
   const { db, getMeta } = await import('../lib/db.js');
   const { getUserBySession } = await import('../lib/auth.js');
 
-  assert.equal(db.prepare('PRAGMA user_version').get().user_version, 1);
+  assert.equal(db.prepare('PRAGMA user_version').get().user_version, 2);
   assert.equal(getUserBySession('legacy-token').username, 'ana', 'la sesión vieja sigue valiendo');
   assert.equal(db.prepare("SELECT COUNT(*) c FROM sessions WHERE token = 'legacy-token'").get().c, 0, 'pero ya no está en claro');
   assert.equal(db.prepare('SELECT COUNT(*) c FROM chunks').get().c, 0, 'chunks viejos descartados');

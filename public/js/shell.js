@@ -10,6 +10,7 @@ import { openSearch } from './search.js';
 import { openAccountMenu } from './account.js';
 import { openImportModal } from './importer.js';
 import { isDark, toggleTheme } from './theme.js';
+import { demoBar, showWelcome } from './demo.js';
 
 export const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
 
@@ -99,6 +100,7 @@ export function renderApp() {
   const notesView = el('section', 'view notes-view');
   const chatView = el('section', 'view chat-view');
   const studyView = el('section', 'view study-view');
+  if (state.user.isDemo) main.appendChild(demoBar());
   main.append(notesView, chatView, studyView);
 
   /* navegación inferior (móvil) */
@@ -124,6 +126,7 @@ export function renderApp() {
   renderSubjects();
   renderNotes();
   switchView(state.view, true);
+  showWelcome();
 }
 
 export function switchView(view, initial = false) {

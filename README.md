@@ -12,7 +12,7 @@ Write, paste, snap the whiteboard or record a voice note. Then ask your notes, s
 ![Node 24+](https://img.shields.io/badge/node-%E2%89%A524-6b4dff.svg)
 ![PWA](https://img.shields.io/badge/PWA-installable-6b4dff.svg)
 
-[Live instance](https://notebook.rossmel.top) · [Self-hosting](#self-hosting) · [How it works](docs/ARCHITECTURE.md) · [Changelog](CHANGELOG.md) · [Español](README.es.md)
+[Live demo](https://notebook.rossmel.top) · [Self-hosting](#self-hosting) · [How it works](docs/ARCHITECTURE.md) · [Changelog](CHANGELOG.md) · [Español](README.es.md)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/desktop-dark.webp" />
@@ -30,7 +30,8 @@ Write, paste, snap the whiteboard or record a voice note. Then ask your notes, s
 - **Instant search.** `Ctrl+K` finds words across every note (accent-insensitive), including inside photos and audio.
 - **WhatsApp import.** Bring in a class group chat (`.zip` with photos and voice notes, or the pasted `.txt`).
 - **Yours.** Self-hosted, one SQLite file, multi-user with per-user isolation, Markdown/zip export, installable PWA, light/dark themes and Spanish/English UI.
-- **Free to run.** Designed around free tiers: Groq for chat and speech-to-text, Gemini for embeddings and image reading.
+- **Free to run.** Designed around free tiers: Groq for chat and speech-to-text, Gemini for embeddings and image reading. The admin panel shows today's free quota (exact for Groq, estimated for Gemini).
+- **Public demo (optional).** `DEMO_ENABLED=1` adds a *Try the demo* button: a temporary 24-hour account with sample notes, flashcards and a quiz, with tight limits (a few AI questions, small files, no imports) and a global daily cap so visitors never eat the quota of real users.
 
 <table>
   <tr>
@@ -104,6 +105,8 @@ The server only listens on `127.0.0.1`. Publish it with a reverse proxy or a tun
 | `EMBED_PER_MINUTE` | `90` | Pace for the Gemini free tier (~100 texts/min) |
 | `RAG_TOP_K` / `RAG_MIN_SIM` | `6` / `0.30` | Retrieved chunks / minimum cosine similarity |
 | `SESSION_DAYS` | `180` | Sessions expire after this many days without use |
+| `DEMO_ENABLED` / `DEMO_HOURS` | `0` / `24` | Public demo with temporary, limited accounts |
+| `GEMINI_EMBED_RPD` / `GEMINI_FLASH_RPD` | `1000` | Gemini free-tier daily limits used by the quota meters |
 
 All options with comments are in [`.env.example`](.env.example). Changing the embedding model triggers a full re-index on the next start.
 

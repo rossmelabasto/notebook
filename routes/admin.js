@@ -7,6 +7,7 @@ import { fail, intParam, limiter, requireAdmin, requireAuth } from '../lib/http.
 import { userFiles, unlinkQuiet } from '../lib/media.js';
 import { queueStats } from '../lib/jobs.js';
 import { embedSpace } from '../lib/llm.js';
+import { aiQuota } from '../lib/quota.js';
 
 export const router = Router();
 router.use(requireAuth, requireAdmin);
@@ -18,7 +19,7 @@ router.get('/users', (req, res) => {
               (SELECT COUNT(*) FROM notes n WHERE n.user_id = u.id) AS notes,
               (SELECT COUNT(*) FROM messages m WHERE m.user_id = u.id) AS messages,
               (SELECT MAX(last_seen) FROM sessions s WHERE s.user_id = u.id) AS last_seen
-         FROM users u ORDER BY u.id`
+         FROM users u WHERE u.demo_expires_at IS NULL ORDER BY u.id`
     )
     .all()
     .map((u) => ({ ...u, isAdmin: !!u.is_admin }));
@@ -65,7 +66,8 @@ router.get('/status', (req, res) => {
   res.json({
     queues: queueStats(),
     counts: {
-      users: count('SELECT COUNT(*) AS c FROM users'),
+      users: count('SELECT COUNT(*) AS c FROM users WHERE demo_expires_at IS NULL'),
+      demoAccounts: count("SELECT COUNT(*) AS c FROM users WHERE demo_expires_at > datetime('now')"),
       notes: count('SELECT COUNT(*) AS c FROM notes'),
       messages: count('SELECT COUNT(*) AS c FROM messages'),
       chunks: count('SELECT COUNT(*) AS c FROM chunks'),
@@ -80,6 +82,7 @@ router.get('/status', (req, res) => {
       vision: config.geminiKey ? `gemini:${config.visionModelGemini}` : `openai:${config.visionModel}`,
       transcription: config.transcribeModel,
     },
+    quota: aiQuota(),
     uptimeSec: Math.round(process.uptime()),
   });
 });

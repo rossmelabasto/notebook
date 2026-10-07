@@ -8,6 +8,7 @@ process.env.DATA_DIR = dir;
 process.env.EMBED_PROVIDER = 'fake';
 process.env.CHAT_PROVIDER = 'fake';
 process.env.SETUP_TOKEN = 'setup-token';
+process.env.DEMO_ENABLED = '1';
 process.env.GROQ_API_KEY = '';
 process.env.OPENAI_API_KEY = '';
 process.env.DEEPSEEK_API_KEY = '';

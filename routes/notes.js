@@ -7,6 +7,7 @@ import { fail, intParam, limiter, requireAuth } from '../lib/http.js';
 import { noteFiles, unlinkQuiet } from '../lib/media.js';
 import { scheduleIndex } from '../lib/jobs.js';
 import { noteToMarkdown, safeFileName } from '../lib/export.js';
+import { checkDemo } from '../lib/demo.js';
 
 export const router = Router();
 router.use(requireAuth);
@@ -77,6 +78,7 @@ const uniqueGuard = (fn) => {
 };
 
 router.post('/subjects', (req, res) => {
+  checkDemo(req.user, 'subjects');
   const name = subjectName(req.body);
   const info = uniqueGuard(() => db.prepare('INSERT INTO subjects (user_id, name) VALUES (?, ?)').run(req.user.id, name));
   res.json({ ok: true, id: Number(info.lastInsertRowid) });
@@ -144,6 +146,7 @@ router.get('/notes/:id', (req, res) => {
 router.post('/notes', limiter('notes', 30, 60_000), (req, res) => {
   const title = String(req.body?.title || '').trim().slice(0, 200);
   if (!title) fail(400, 'empty_title', 'Title cannot be empty');
+  checkDemo(req.user, 'notes');
   const subjectId = subjectFromBody(req.user.id, req.body?.subject_id);
   const content = String(req.body?.content || '').slice(0, 200_000);
   const noteId = tx(() => {
@@ -188,6 +191,8 @@ router.post('/notes/:id/messages', limiter('msg', 90, 60_000), (req, res) => {
   const raw = Array.isArray(req.body?.content) ? req.body.content : [req.body?.content];
   const texts = raw.map((x) => String(x ?? '').trim()).filter((x) => x.length > 0 && x.length <= 100_000).slice(0, 500);
   if (!texts.length) fail(400, 'empty_message', 'Empty or too long message');
+  checkDemo(req.user, 'messages', texts.length);
+  checkDemo(req.user, 'messageChars', Math.max(...texts.map((x) => x.length)));
   const ids = tx(() => {
     const ins = db.prepare("INSERT INTO messages (note_id, user_id, kind, content) VALUES (?, ?, 'text', ?)");
     const out = texts.map((t) => Number(ins.run(note.id, req.user.id, t).lastInsertRowid));
@@ -215,6 +220,7 @@ router.put('/messages/:id', (req, res) => {
   }
   if (typeof req.body?.content === 'string') {
     const content = req.body.content.trim().slice(0, 100_000);
+    checkDemo(req.user, 'messageChars', content.length);
     if (msg.kind === 'text' && !content) fail(400, 'empty_message', 'Empty message');
     db.prepare('UPDATE messages SET content = ? WHERE id = ?').run(content, msg.id);
     scheduleIndex(msg.note_id);
