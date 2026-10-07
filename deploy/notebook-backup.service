@@ -1,0 +1,8 @@
+# Ejemplo: backup diario (base + imágenes/audios). Activar junto con notebook-backup.timer
+[Unit]
+Description=Backup diario del Notebook
+
+[Service]
+Type=oneshot
+User=notebook
+ExecStart=/opt/notebook/scripts/backup.sh

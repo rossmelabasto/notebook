@@ -1,0 +1,44 @@
+{
+  "name": "notebook",
+  "version": "2.0.0",
+  "description": "Your notes as a chat with yourself, with AI memory: ask them, search them, study with flashcards. Self-hosted, free-tier AI.",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --import ./test/setup.js --test --test-concurrency=1 test/*.test.js",
+    "eval": "node scripts/eval-rag.js",
+    "deploy": "bash scripts/deploy.sh"
+  },
+  "type": "module",
+  "dependencies": {
+    "adm-zip": "^0.6.0",
+    "dompurify": "^3.4.16",
+    "express": "^5.2.1",
+    "fastq": "^1.20.1",
+    "marked": "^18.1.0",
+    "multer": "^2.2.0",
+    "openai": "^7.4.0",
+    "sqlite-vec": "^0.1.9"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "license": "MIT",
+  "author": "Rossmel Abasto (https://portfolio.rossmel.top)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rossmelabasto/notebook.git"
+  },
+  "homepage": "https://notebook.rossmel.top",
+  "keywords": [
+    "notes",
+    "rag",
+    "sqlite-vec",
+    "pwa",
+    "groq",
+    "gemini",
+    "study",
+    "flashcards",
+    "self-hosted"
+  ]
+}

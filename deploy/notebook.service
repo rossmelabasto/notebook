@@ -1,0 +1,22 @@
+# Ejemplo de unidad systemd: /etc/systemd/system/notebook.service
+# Ajusta User, WorkingDirectory y ReadWritePaths a tu instalación.
+[Unit]
+Description=Notebook - apuntes con memoria
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=notebook
+WorkingDirectory=/opt/notebook
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=10
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+ReadWritePaths=/opt/notebook/data
+
+[Install]
+WantedBy=multi-user.target
