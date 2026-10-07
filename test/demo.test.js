@@ -22,7 +22,7 @@ test('crear una demo: apuntes, flashcards y quiz de ejemplo, sesión de demo', a
   assert.equal(notes.length, 3);
   const study = (await d.get('/api/study')).data.sets;
   assert.deepEqual(study.map((s) => s.kind).sort(), ['flashcards', 'quiz']);
-  const bio = notes.find((n) => /Célula/.test(n.title));
+  const bio = notes.find((n) => /Complejidad/.test(n.title));
   const full = (await d.get(`/api/notes/${bio.id}`)).data.note;
   assert.equal(full.messages.find((m) => m.kind === 'image').status, 'done', 'la imagen viene ya leída (no gasta IA)');
   await app.jobs.indexIdle();
@@ -31,7 +31,7 @@ test('crear una demo: apuntes, flashcards y quiz de ejemplo, sesión de demo', a
 test('límites: preguntas, importar, contraseña y tamaño de mensajes', async () => {
   const d = client(app.base);
   await d.post('/api/demo', { lang: 'en' });
-  for (let i = 0; i < 8; i++) assert.equal((await ask(d, 'mitochondria ' + i)).status, 200);
+  for (let i = 0; i < 8; i++) assert.equal((await ask(d, 'binary search ' + i)).status, 200);
   const r = await ask(d, 'one more');
   assert.equal(r.status, 429);
   assert.equal(r.data.code, 'demo_limit');

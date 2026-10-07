@@ -1,5 +1,5 @@
 // sw.js — Notebook PWA: red primero (siempre la versión nueva) y caché como respaldo sin conexión
-const CACHE = 'notebook-v5';
+const CACHE = 'notebook-v6';
 const CORE = [
   '/', '/index.html', '/style.css', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png',
   '/js/main.js', '/js/core.js', '/js/i18n.js', '/js/shell.js', '/js/editor.js', '/js/ask.js', '/js/study.js',
