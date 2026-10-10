@@ -7,7 +7,7 @@
 **Your notes as a chat with yourself — with AI memory.**<br/>
 Write, paste, snap the whiteboard or record a voice note. Then ask your notes, search them instantly and study with flashcards made from what *you* wrote.
 
-[![CI](https://github.com/rossmelabasto/notebook/actions/workflows/ci.yml/badge.svg)](https://github.com/rossmelabasto/notebook/actions/workflows/ci.yml)
+[![CI](https://github.com/rossmelabasto/ross_notebook/actions/workflows/ci.yml/badge.svg)](https://github.com/rossmelabasto/ross_notebook/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-a3e635.svg)](LICENSE)
 ![Node 24+](https://img.shields.io/badge/node-%E2%89%A524-6b4dff.svg)
 ![PWA](https://img.shields.io/badge/PWA-installable-6b4dff.svg)
@@ -71,7 +71,7 @@ Indexing is incremental: adding a message only re-embeds the last chunk. More de
 **Requirements:** Node.js 24+, Linux/macOS (x64 or arm64 — a Raspberry Pi or an old PC is enough) and free API keys from [Groq](https://console.groq.com/keys) and [Google AI Studio](https://aistudio.google.com/apikey).
 
 ```bash
-git clone https://github.com/rossmelabasto/notebook.git
+git clone https://github.com/rossmelabasto/ross_notebook.git
 cd notebook
 npm ci --omit=dev
 cp .env.example .env      # add GROQ_API_KEY, GEMINI_API_KEY and a random SETUP_TOKEN

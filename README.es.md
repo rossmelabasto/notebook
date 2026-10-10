@@ -33,7 +33,7 @@ Escribe, pega, sácale foto a la pizarra o graba una nota de voz. Después preg�
 Necesitas Node.js 24+, Linux o macOS (x64 o arm64: alcanza con una Raspberry Pi o una PC vieja) y claves gratuitas de [Groq](https://console.groq.com/keys) y [Google AI Studio](https://aistudio.google.com/apikey).
 
 ```bash
-git clone https://github.com/rossmelabasto/notebook.git
+git clone https://github.com/rossmelabasto/ross_notebook.git
 cd notebook
 npm ci --omit=dev
 cp .env.example .env      # pon GROQ_API_KEY, GEMINI_API_KEY y un SETUP_TOKEN al azar

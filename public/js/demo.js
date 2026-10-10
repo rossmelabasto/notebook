@@ -2,7 +2,7 @@
 import { state, el, icon, btn, api, toastError, openModal } from './core.js';
 import { t, getLang } from './i18n.js';
 
-export const REPO_SELF_HOST = 'https://github.com/rossmelabasto/notebook#self-hosting';
+export const REPO_SELF_HOST = 'https://github.com/rossmelabasto/ross_notebook#self-hosting';
 
 /** Crea una cuenta temporal con apuntes de ejemplo y entra */
 export async function startDemo(button) {

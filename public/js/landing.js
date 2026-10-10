@@ -6,7 +6,7 @@ import { renderAuth } from './auth.js';
 import { api } from './core.js';
 import { startDemo } from './demo.js';
 
-export const REPO_URL = 'https://github.com/rossmelabasto/notebook';
+export const REPO_URL = 'https://github.com/rossmelabasto/ross_notebook';
 export const PORTFOLIO_URL = 'https://portfolio.rossmel.top';
 
 const link = (cls, href, children, external = true) => {
